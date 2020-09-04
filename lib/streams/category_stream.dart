@@ -45,6 +45,9 @@ class CategoryStream {
     _categoryList[0].updateStatsWithTask(task: task,  updateType: UpdateType.REMOVE, forceUpdate: true);
     _categoryList.firstWhere((cat) => cat.name == task.category).updateStatsWithTask(task: task, updateType: UpdateType.REMOVE);
 
+    //If any category has no more tasks left, kick it from the category list
+    _categoryList.removeWhere((cat) => cat.totalTaskNumber == 0);
+
     //Emit the updated category list after removal
     _subject.add(_categoryList);
   }
@@ -56,6 +59,22 @@ class CategoryStream {
 
     //Emit the updated category list after removal
     _subject.add(_categoryList);
+  }
+
+  removeCategory(Category category){
+    //Remove the category from list unless its "all"
+    if (category.name != "all") {
+      //Update the all tab with the completedTask and totalTask of the category being removed
+      _categoryList[0].totalTaskNumber -= category.totalTaskNumber;
+      _categoryList[0].completedTaskNumber -= category.completedTaskNumber;
+
+
+      _categoryList.removeWhere((cat) => cat.name == category.name);
+
+      //Emit the updated category list after removal
+      _subject.add(_categoryList);
+    }
+
   }
 
   dispose() {

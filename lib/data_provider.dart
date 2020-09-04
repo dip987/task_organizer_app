@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_sample_test_3/category.dart';
 import 'package:flutter_sample_test_3/color_constants.dart';
 import 'package:flutter_sample_test_3/streams/category_stream.dart';
 import 'package:flutter_sample_test_3/streams/task_stream.dart';
@@ -17,6 +18,8 @@ class DataProvider extends ChangeNotifier {
   bool autoDelete; //AutoDeletes old-done tasks during load-time
   bool defaultToSticky;
   bool suggestCategory;
+  String userName;
+
 
   DateTime selectedDate;
   String dayString;
@@ -74,6 +77,14 @@ class DataProvider extends ChangeNotifier {
 
   update() {
     notifyListeners();
+  }
+
+  removeCategory(Category category){
+    categoryStream.removeCategory(category);
+    taskStream.removeCategory(category);
+
+    notifyListeners();
+
   }
 
   ///Add task to the cache-memory list, notify all listeners for repaint and add it to database
@@ -154,6 +165,7 @@ class DataProvider extends ChangeNotifier {
       autoDelete = _prefs.value["autoDelete"] ?? false;
       defaultToSticky = _prefs.value["defaultToSticky"] ?? false;
       suggestCategory = _prefs.value["suggestCategory"] ?? true;
+      userName = _prefs.value["userName"] ?? "Kenny";
     }
     //If nothing found, save it defaults
 
@@ -163,7 +175,8 @@ class DataProvider extends ChangeNotifier {
         "showDatelessTasks": true,
         "autoDelete": false,
         "defaultToSticky": false,
-        "suggestCategory": true
+        "suggestCategory": true,
+        "userName" : "Kenny"
       });
   }
 
@@ -176,7 +189,8 @@ class DataProvider extends ChangeNotifier {
       "showDatelessTasks": showDatelessTasks,
       "autoDelete": autoDelete,
       "defaultToSticky": defaultToSticky,
-      "suggestCategory": suggestCategory
+      "suggestCategory": suggestCategory,
+      userName: userName
     });
   }
 

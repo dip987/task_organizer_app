@@ -205,12 +205,53 @@ class _ExpandedCategoryCardState extends State<ExpandedCategoryCard> {
     super.dispose();
   }
 
+  _confirmDeleteDialog() async{
+    return showDialog<bool>(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: Text("Confirm Delete", style: Theme.of(context).textTheme.headline4,),
+          actions: <Widget>[
+            FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Selector<DataProvider, Tuple2<ColorConstants, TaskStream>>(
       selector: (_, provider) => Tuple2(provider.colorConstants, provider.taskStream),
       builder: (_, data, __)=> Scaffold(
           appBar: AppBar(
+            actions: [IconButton(icon: Icon(Icons.delete), onPressed: () async{
+               var _delete = await _confirmDeleteDialog();
+               print(_delete);
+               if (_delete == true){
+                 Provider.of<DataProvider>(context, listen: false).removeCategory(widget.category);
+                 Navigator.of(context).pop();
+               }
+            },)],
             automaticallyImplyLeading: true,
             title: Row(children: [
               Container(
@@ -243,3 +284,6 @@ class _ExpandedCategoryCardState extends State<ExpandedCategoryCard> {
         );
   }
 }
+
+
+

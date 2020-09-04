@@ -27,6 +27,40 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               children: [
                 SizedBox(
+                  height: 32.0,
+                ),
+                FractionallySizedBox(
+                    widthFactor: 0.5,
+                    child: TextField(
+                      controller: TextEditingController(text: Provider.of<DataProvider>(context, listen: false).userName),
+                      autofocus: false,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      onSubmitted: (userName){
+                        Provider.of<DataProvider>(context, listen: false).userName = userName;
+                        Provider.of<DataProvider>(context, listen: false).savePrefs();
+                      },
+                      cursorColor: colorConstants.widgetBackground,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(color: colorConstants.fontColor.withAlpha(230), ),
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                      textInputAction: TextInputAction.done,
+                      textCapitalization: TextCapitalization.words,
+                    )),
+                SizedBox(
+                  height: 32.0,
+                ),
+                Container(
+                    height: 2.0,
+                    color: colorConstants.invertedBackground,
+                    child: FractionallySizedBox(widthFactor: 0.8)),
+                SizedBox(
                   height: 12.0,
                 ),
                 TextWithSwitch(
@@ -35,17 +69,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   keyValue: colorConstants.nightMode,
                   keyCallback: (DataProvider provider) => toggleNightMode(provider),
                 ),
-                SizedBox(height: 32,),
+                SizedBox(
+                  height: 32,
+                ),
                 TextWithSwitch(
                   text: "Show Sticky Tasks",
-                  detailText: "Tasks without an explicit date are considered sticky and added to the end of today's task list",
+                  detailText:
+                      "Tasks without an explicit date are considered sticky and added to the end of today's task list",
                   keyValue: Provider.of<DataProvider>(context).showDatelessTasks,
                   keyCallback: (DataProvider provider) {
                     provider.showDatelessTasks = !provider.showDatelessTasks;
                     provider.savePrefs();
                   },
                 ),
-                SizedBox(height: 32,),
+                SizedBox(
+                  height: 32,
+                ),
                 TextWithSwitch(
                   text: "Auto-delete Done Tasks",
                   detailText: "Automatically delete old tasks you have ticked as done",
@@ -55,17 +94,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     provider.savePrefs();
                   },
                 ),
-                SizedBox(height: 32,),
+                SizedBox(
+                  height: 32,
+                ),
                 TextWithSwitch(
                   text: "Default Tasks to Sticky",
-                  detailText: "Defaults the date field for adding tasks to sticky/dateless unless a date is explicitly set",
+                  detailText:
+                      "Defaults the date field for adding tasks to sticky/dateless unless a date is explicitly set",
                   keyValue: Provider.of<DataProvider>(context).defaultToSticky,
                   keyCallback: (DataProvider provider) {
                     provider.defaultToSticky = !provider.defaultToSticky;
                     provider.savePrefs();
                   },
                 ),
-                SizedBox(height: 32,),
+                SizedBox(
+                  height: 32,
+                ),
                 TextWithSwitch(
                   text: "Show Category Suggestions",
                   detailText: "Show suggested category while you are typing",
@@ -75,9 +119,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     provider.savePrefs();
                   },
                 ),
-
-
-
               ],
             ),
           ),
@@ -87,63 +128,67 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-
 class TextWithSwitch extends StatelessWidget {
   final String text;
   final bool keyValue;
   final Function keyCallback;
   final String detailText;
 
-
   TextWithSwitch({this.text = "", this.keyValue, this.keyCallback, this.detailText = ""});
 
   @override
   Widget build(BuildContext context) {
-    return
-      Consumer<DataProvider>(
-        builder: (_, provider, __) => Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(
-              flex: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    text,
-                    textAlign: TextAlign.left,
-                    style: Theme.of(context).textTheme.headline6.copyWith(
-                        color: provider.colorConstants.fontColor.withAlpha(230)),
-                  ),
-                  Text(
-                    detailText,
-                    textAlign: TextAlign.left,
-                    style: Theme.of(context).textTheme.bodyText1.copyWith(
-                        color: provider.colorConstants.fontColor.withAlpha(200)),
-
-                  ),
-                ],
+    return Consumer<DataProvider>(
+      builder: (_, provider, __) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Flexible(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  text,
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(color: provider.colorConstants.fontColor.withAlpha(230)),
+                ),
+                Text(
+                  detailText,
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .copyWith(color: provider.colorConstants.fontColor.withAlpha(200)),
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Switch(
+                value: keyValue,
+                activeColor: provider.colorConstants.widgetBackground,
+                activeTrackColor: provider.colorConstants.nightMode
+                    ? ColorConstants.whiteFontColor
+                    : ColorConstants.greyBackground,
+                inactiveTrackColor: provider.colorConstants.nightMode
+                    ? ColorConstants.greyBackground.withAlpha(50)
+                    : ColorConstants.darkBackground.withAlpha(230),
+                inactiveThumbColor: provider.colorConstants.widgetBackground,
+                onChanged: (state) {
+                  keyCallback(provider);
+                },
               ),
             ),
-            Flexible(
-              flex: 1,
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Switch(
-                      value: keyValue,
-                      activeColor: provider.colorConstants.widgetBackground,
-                      activeTrackColor: provider.colorConstants.nightMode? ColorConstants.whiteFontColor: ColorConstants.greyBackground,
-                      inactiveTrackColor: provider.colorConstants.nightMode? ColorConstants.greyBackground.withAlpha(50): ColorConstants.darkBackground.withAlpha(230),
-                      inactiveThumbColor: provider.colorConstants.widgetBackground,
-                      onChanged: (state) {
-                        keyCallback(provider);
-                      } ,
-                    ),
-              ),
-            )
-          ],
-        ),
-      );
+          )
+        ],
+      ),
+    );
   }
 }

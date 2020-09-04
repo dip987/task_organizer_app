@@ -104,7 +104,7 @@ class _TaskStripState extends State<TaskStrip> {
                         ),
                         (widget.includeDate && widget.task.date != null)
                             ? Padding(
-                                padding: EdgeInsets.only(right: height / 2),
+                                padding: EdgeInsets.only(right: height / 2, left: gap),
                                 child: Text(
                                   "${DateFormat.MMMMd().format(widget.task.date)}",
                                   style: Theme.of(context)

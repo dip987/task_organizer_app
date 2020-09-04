@@ -70,7 +70,6 @@ class TaskStream {
       else _taskListToShowCategory = _allTaskList.where((task) => task.category == _selectedCategory.name).toList();
 
 
-
       _categorySubject.add(_taskListToShowCategory);
     }
   }
@@ -80,7 +79,6 @@ class TaskStream {
   }
 
   openCard(Category category) {
-    //TODO null safety stuff?
     if (_selectedCategory == null) {
       _selectedCategory = category;
       updateCategoryStream();
@@ -101,6 +99,15 @@ class TaskStream {
     //Emit a new stream of tasks to show using the current selected date
     updateHomeStream();
     updateCategoryStream();
+  }
+
+  removeCategory(Category category){
+    if (category.name != "all") {
+      _allTaskList.removeWhere((task) => task.category == category.name);
+
+      updateHomeStream();
+      updateCategoryStream();
+    }
   }
 
   dispose() {

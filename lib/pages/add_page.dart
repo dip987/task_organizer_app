@@ -8,6 +8,7 @@ import 'package:flutter_sample_test_3/widgets/navigation_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:flushbar/flushbar.dart';
 
 class AddPage extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
   final _formKey = GlobalKey<FormState>();
+
   var dateInputFormatter =
       MaskTextInputFormatter(mask: '##/##/##', filter: {"#": RegExp(r'[0-9]')});
 
@@ -24,6 +26,10 @@ class _AddPageState extends State<AddPage> {
 
   bool _defaultToSticky;
   bool _suggestCategory;
+
+  String _stickyDefaultText = "Sticky";
+
+  List<String> allCategoryNames;
 
   //The task to be added
   var task;
@@ -38,10 +44,13 @@ class _AddPageState extends State<AddPage> {
     _defaultToSticky = Provider.of<DataProvider>(context, listen: false).defaultToSticky;
     _dateFieldController = TextEditingController(
         text: _defaultToSticky
-            ? "Sticky"
+            ? _stickyDefaultText
             : "${_selectedDate.day.toString().padLeft(2, '0')}/${_selectedDate.month.toString().padLeft(2, '0')}/${(_selectedDate.year - 2000).toString().padLeft(2, '0')}");
 
     _suggestCategory = Provider.of<DataProvider>(context, listen: false).suggestCategory;
+
+    allCategoryNames =
+        Provider.of<DataProvider>(context, listen: false).categoryStream.categoryNames;
 
     super.initState();
   }
@@ -73,7 +82,7 @@ class _AddPageState extends State<AddPage> {
                           child: Column(
                             children: [
                               SizedBox(
-                                height: 12.0,
+                                height: 32.0,
                               ),
                               CustomTextFormField(
                                 validator: taskNameValidator,
@@ -86,6 +95,7 @@ class _AddPageState extends State<AddPage> {
                               CustomTextFormField(
                                   isCategory: true,
                                   controller: _categoryFieldController,
+                                  allCategoryNames: allCategoryNames,
                                   suggestCategory: _suggestCategory,
                                   validator: categoryValidator,
                                   labelText: "Category",
@@ -108,10 +118,8 @@ class _AddPageState extends State<AddPage> {
                         ),
                       ),
                     ),
-                    Positioned(
-                      bottom: 0.0,
-                      left: 0.0,
-                      right: 0.0,
+                    Align(
+                      alignment: Alignment.bottomCenter,
                       child: CustomBottomNavBar(
                         callback: addTask,
                       ),
@@ -132,6 +140,7 @@ class _AddPageState extends State<AddPage> {
 
   String dateValidator(String text) {
     if (text.length == 0) return null;
+    if (text == _stickyDefaultText) return null;
     if (text.length < 8) return "Please enter a full date";
     try {
       var splitText = text.split(r"/");
@@ -145,7 +154,7 @@ class _AddPageState extends State<AddPage> {
 
   String categoryValidator(String text) {
     if (text != "")
-      task.category = text.toLowerCase();
+      task.category = text.toLowerCase().trim();
     else
       task.category = "others";
     return null;
@@ -156,9 +165,13 @@ class _AddPageState extends State<AddPage> {
     bool _valid = _formKey.currentState.validate();
     if (_valid) {
       Provider.of<DataProvider>(_formKey.currentState.context, listen: false).addTask(task);
-      Scaffold.of(_formKey.currentContext).showSnackBar(const SnackBar(
-        content: Text("Task Added"),
-      ));
+      Flushbar(
+        messageText: Text("Task Added", style: Theme.of(context).textTheme.headline6.copyWith(color: ColorConstants.whiteFontColor),),
+        padding: EdgeInsets.all(4.0),
+        duration: Duration(seconds: 2),
+        flushbarPosition: FlushbarPosition.TOP,
+        backgroundColor: task.color,
+      )..show(_formKey.currentState.context);
       resetScreen();
     }
   }
@@ -170,6 +183,7 @@ class _AddPageState extends State<AddPage> {
   }
 }
 
+///Custom designed text input and for field with with suggestions options
 class CustomTextFormField extends StatelessWidget {
   @required
   final Function validator;
@@ -184,6 +198,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final bool isCategory;
   final bool suggestCategory;
+  final List<String> allCategoryNames;
 
   CustomTextFormField(
       {this.validator,
@@ -195,7 +210,8 @@ class CustomTextFormField extends StatelessWidget {
       this.addTask,
       this.controller,
       this.isCategory = false,
-      this.suggestCategory = false});
+      this.suggestCategory = false,
+      this.allCategoryNames = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -230,10 +246,8 @@ class CustomTextFormField extends StatelessWidget {
             },
             suggestionsCallback: (pattern) {
               //Include more ifs here to create suggestions for fields
-              if (isCategory && controller.text != "" && suggestCategory) {
-                return Provider.of<DataProvider>(context, listen: false)
-                    .categoryStream
-                    .categoryNames
+              if (isCategory && suggestCategory) {
+                return allCategoryNames
                     .where((name) => name.contains(pattern.toLowerCase()))
                     .toList();
               } else

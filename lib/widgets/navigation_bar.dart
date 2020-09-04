@@ -35,20 +35,22 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            IconButton(icon: Icon(Icons.home, color: _index == 0? colorConstants.widgetBackground : ColorConstants.greyBackground,), onPressed: (){
+            FlatButton(child: Icon(Icons.home, color: _index == 0? colorConstants.widgetBackground : ColorConstants.greyBackground,), onPressed: (){
               //If the icon pressed has the same index as the current route, call the route callback
               if (widget.callback != null && _index == 0) widget.callback();
 
               if (_index != 0){
                 Navigator.popUntil(context, ModalRoute.withName('/home'));
               }
-            },),
+            },
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(20.0),
+            ),
             Padding(
               padding: const EdgeInsets.all(2.0),
               child: FlatButton(
                 onPressed: (){
                   if (widget.callback != null && _index == 1) widget.callback();
-
 
                   //Prevents Creation of Unnecessary Routes
                   //Makes it so that the Stack only ever has 2 Pages at max. Home and this
@@ -62,7 +64,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                   padding: EdgeInsets.all(20.0),
                   child: Icon(Icons.add, color: ColorConstants.lightBackground,)),
             ),
-            IconButton(icon: Icon(Icons.person, color: _index == 2? colorConstants.widgetBackground : ColorConstants.greyBackground,), onPressed: (){
+            FlatButton(child: Icon(Icons.person, color: _index == 2? colorConstants.widgetBackground : ColorConstants.greyBackground,), onPressed: (){
               if (widget.callback != null && _index == 2) widget.callback();
 
               //Prevents Creation of Unnecessary Routes
@@ -71,7 +73,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                 if(_index == 0) {Navigator.pushNamed(context, '/profile');}
                 else Navigator.of(context).popAndPushNamed('/profile');
               }
-            },),
+            },
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(20.0),
+            ),
           ],
         ),
       ),

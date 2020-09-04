@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                           textStyle: Theme.of(context).textTheme.headline4.copyWith(color: colorConstants.fontColor.withAlpha(150))),
 
                     ),
-                    Container(color: colorConstants.secondaryBackgroundColor, child: Text("Cartman", style: Theme.of(context).textTheme.headline5.copyWith(color: colorConstants.fontColor))),
+                    Container(color: colorConstants.secondaryBackgroundColor, child: Text(Provider.of<DataProvider>(context).userName, style: Theme.of(context).textTheme.headline5.copyWith(color: colorConstants.fontColor))),
                   ]),
                 ),
                 SliverAppBar(
