@@ -59,15 +59,10 @@ class _TaskStripState extends State<TaskStrip> {
                     });
                   },
                   child: Container(
-                    height: height,
+                    // height: height,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: tapped ? Colors.transparent : colorConstants.secondaryBackgroundColor,
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //       blurRadius: 1.0,
-                      //       color: ColorConstants.darkBackground.withAlpha(100))
-                      // ],
                       borderRadius: BorderRadius.all(Radius.circular(height / 2)),
                     ),
                     child: Row(

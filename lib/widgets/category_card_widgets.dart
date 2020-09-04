@@ -33,13 +33,12 @@ class CategoryCard extends StatelessWidget {
           color: category.color,
           borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         ),
-        child: Align(
-          alignment: Alignment(-0.2, 0),
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: verticalSpacing),
               Container(
                 padding: EdgeInsets.all(iconPadding),
                 decoration: BoxDecoration(
@@ -52,11 +51,16 @@ class CategoryCard extends StatelessWidget {
                   color: ColorConstants.whiteFontColor,
                 ),
               ),
-              SizedBox(height: verticalSpacing * 3),
-              Text(
-                category.displayName,
-                style: Theme.of(context).textTheme.headline6.copyWith(
-                    color: ColorConstants.whiteFontColor.withAlpha(220)),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    category.displayName,
+                    style: Theme.of(context).textTheme.headline6.copyWith(
+                        color: ColorConstants.whiteFontColor.withAlpha(220),
+                        height: 1.0), //Line spacing!!! ????? for some reason
+                  ),
+                ),
               ),
               SizedBox(height: verticalSpacing),
               ProgressBar(
@@ -68,7 +72,8 @@ class CategoryCard extends StatelessWidget {
                 "${category.totalTaskNumber - category.completedTaskNumber} Remaining",
                 style: Theme.of(context).textTheme.bodyText2.copyWith(
                     color: ColorConstants.whiteFontColor.withAlpha(255)),
-              )
+              ),
+              SizedBox(height: verticalSpacing),
             ],
           ),
         ),

@@ -97,6 +97,7 @@ class _AddPageState extends State<AddPage> {
                                   controller: _categoryFieldController,
                                   allCategoryNames: allCategoryNames,
                                   suggestCategory: _suggestCategory,
+                                  inputFormatter: [LengthLimitingTextInputFormatter(28)],
                                   validator: categoryValidator,
                                   labelText: "Category",
                                   hintText: " Travel"),
