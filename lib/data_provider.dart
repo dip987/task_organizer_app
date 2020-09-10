@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sample_test_3/category.dart';
 import 'package:flutter_sample_test_3/color_constants.dart';
@@ -80,8 +82,15 @@ class DataProvider extends ChangeNotifier {
   }
 
   removeCategory(Category category){
+    //Update the counts on the category card/Remove the card if the category is empty
     categoryStream.removeCategory(category);
-    taskStream.removeCategory(category);
+
+    //Get a list of tasks to remove and update the tasks view
+    List<Task> _tasksToRemove = taskStream.removeCategory(category);
+
+    //Delete these tasks from the database
+    _tasksToRemove.forEach((task) {_store.record(task.databaseKey).delete(_db);});
+
 
     notifyListeners();
 
@@ -115,10 +124,16 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
+
+
   loadDatabase() async {
     var dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
+
     String dbPath = dir.path + 'tasks.db';
+    print(dbPath);
+
     DatabaseFactory dbFactory = databaseFactoryIo;
     _db = await dbFactory.openDatabase(dbPath);
     _store = StoreRef.main();

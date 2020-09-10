@@ -27,6 +27,8 @@ class _AddPageState extends State<AddPage> {
   bool _defaultToSticky;
   bool _suggestCategory;
 
+  DateTime _selectedDate;
+
   String _stickyDefaultText = "Sticky";
 
   List<String> allCategoryNames;
@@ -40,7 +42,7 @@ class _AddPageState extends State<AddPage> {
     _categoryFieldController = TextEditingController();
 
     //THis might cause issues with dates before 2000 :|
-    DateTime _selectedDate = Provider.of<DataProvider>(context, listen: false).selectedDate;
+    _selectedDate = Provider.of<DataProvider>(context, listen: false).selectedDate;
     _defaultToSticky = Provider.of<DataProvider>(context, listen: false).defaultToSticky;
     _dateFieldController = TextEditingController(
         text: _defaultToSticky
@@ -104,15 +106,29 @@ class _AddPageState extends State<AddPage> {
                               SizedBox(
                                 height: 32.0,
                               ),
-                              CustomTextFormField(
-                                controller: _dateFieldController,
-                                validator: dateValidator,
-                                labelText: "Date",
-                                hintText: " DD/MM/YY",
-                                inputFormatter: [dateInputFormatter],
-                                keyBoardType: TextInputType.number,
-                                isFinalInputField: true,
-                                addTask: addTask,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomTextFormField(
+                                      controller: _dateFieldController,
+                                      validator: dateValidator,
+                                      labelText: "Date",
+                                      hintText: " DD/MM/YY",
+                                      inputFormatter: [dateInputFormatter],
+                                      keyBoardType: TextInputType.number,
+                                      isFinalInputField: true,
+                                      addTask: addTask,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.calendar_today,
+                                      color: colorConstants.widgetBackground,
+                                    ),
+                                    onPressed: () => showCalendar(context, _dateFieldController,
+                                        colorConstants.background, colorConstants.widgetBackground),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -162,25 +178,60 @@ class _AddPageState extends State<AddPage> {
   }
 
   ///Adds the Task associated with this page to the data-provider
-  void addTask() {
+  addTask() {
     bool _valid = _formKey.currentState.validate();
     if (_valid) {
       Provider.of<DataProvider>(_formKey.currentState.context, listen: false).addTask(task);
       Flushbar(
-        messageText: Text("Task Added", style: Theme.of(context).textTheme.headline6.copyWith(color: ColorConstants.whiteFontColor),),
+        messageText: Text(
+          "Task Added",
+          style:
+              Theme.of(context).textTheme.headline6.copyWith(color: ColorConstants.whiteFontColor),
+        ),
         padding: EdgeInsets.all(4.0),
         duration: Duration(seconds: 2),
         flushbarPosition: FlushbarPosition.TOP,
         backgroundColor: task.color,
       )..show(_formKey.currentState.context);
+      if (!allCategoryNames.contains(task.category)) allCategoryNames.add(task.category);
       resetScreen();
     }
   }
 
-  void resetScreen() {
+  resetScreen() {
     task = Task();
     FocusScope.of(_formKey.currentState.context).unfocus();
     _formKey.currentState.reset();
+  }
+
+  showCalendar(BuildContext context, TextEditingController dateTextController, Color bgColor,
+      Color fgColor) async {
+    DateTime _datePicked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+      builder: (context, child) => Theme(
+        data: ThemeData(
+            primarySwatch: MaterialColor(fgColor.value, {
+          50: fgColor,
+          100: fgColor,
+          200: fgColor,
+          300: fgColor,
+          400: fgColor,
+          500: fgColor,
+          600: fgColor,
+          700: fgColor,
+          800: fgColor,
+          900: fgColor
+        })),
+        child: child,
+      ),
+    );
+
+    if (_datePicked != null)
+      dateTextController.text =
+          "${_datePicked.day.toString().padLeft(2, '0')}/${_datePicked.month.toString().padLeft(2, '0')}/${(_datePicked.year - 2000).toString().padLeft(2, '0')}";
   }
 }
 

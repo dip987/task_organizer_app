@@ -102,12 +102,17 @@ class TaskStream {
   }
 
   removeCategory(Category category){
+    List<Task> tasksToRemove = [];
     if (category.name != "all") {
+      //DOING THE SAME THING TWICE HERE, MAYBE FIND AN ALTERNATE?
+      tasksToRemove = _allTaskList.where((task) => task.category == category.name).toList();
       _allTaskList.removeWhere((task) => task.category == category.name);
 
       updateHomeStream();
       updateCategoryStream();
     }
+
+    return tasksToRemove;
   }
 
   dispose() {
