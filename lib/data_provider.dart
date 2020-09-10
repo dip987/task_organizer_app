@@ -190,7 +190,7 @@ class DataProvider extends ChangeNotifier {
       "autoDelete": autoDelete,
       "defaultToSticky": defaultToSticky,
       "suggestCategory": suggestCategory,
-      userName: userName
+      "userName": userName
     });
   }
 

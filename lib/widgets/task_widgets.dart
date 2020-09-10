@@ -89,12 +89,15 @@ class _TaskStripState extends State<TaskStrip> {
                                       color: color, size: iconSize),
                             )),
                         Expanded(
-                          child: Text(
-                            task,
-                            style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                color: colorConstants.fontColor.withAlpha(200),
-                                decoration:
-                                    isDone ? TextDecoration.lineThrough : TextDecoration.none),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
+                            child: Text(
+                              task,
+                              style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                  color: colorConstants.fontColor.withAlpha(200),
+                                  decoration:
+                                      isDone ? TextDecoration.lineThrough : TextDecoration.none),
+                            ),
                           ),
                         ),
                         (widget.includeDate && widget.task.date != null)
